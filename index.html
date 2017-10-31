@@ -1,0 +1,47 @@
+<html lang="en">
+  <head>
+    <title>Litchi Waypoints</title>
+    <link rel="stylesheet" href="/css/photos.css" />
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script>
+      function submit_form(form) {
+        form_data = {name: "main"};
+        for (var i = 0; i < form.elements.length; i++) {
+            var e = form.elements[i];
+            form_data[e.name] = e.value;
+        }
+        $.post("/cgi-bin/waypoints.cgi", form_data,
+          function (result) {
+            console.log("ready", result);
+            var filename = "waypoints.csv";
+            var csv = 'data:text/csv;charset=utf-8,' + result["text"]
+            var data = encodeURI(csv);
+            var link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', filename);
+            link.click();
+          }, "json");
+        return false;
+      }
+    </script>
+  </head>
+  <body style="overflow-y: hidden">
+    <form name=waypoints method=post onsubmit='return(submit_form(this))'>
+        <!--lat, lon, dist_between_waypoints, drone_heading, camera_heading, gimbal_pitch, num_rows, num_cols, drone_height-->
+        <table>
+          <tr><td align=right>Latitude</td><td><input type="text" name="lat"/></td></tr>
+          <tr><td align=right>Longitude</td><td><input type="text" name="lon"/></td></tr>
+          <tr><td align=right>Distance Between Waypoints</td><td><input type="text" name="dist_between_waypoints"/> feet</td></tr>
+          <tr><td align=right>Drone Heading</td><td><input type="text" name="drone_heading"/>(0 to 360) deg</td></tr>
+          <tr><td align=right>Camera Heading</td><td><input type="text" name="camera_heading"/>(0 to 360) deg</td></tr>
+          <tr><td align=right>Gimbel Pitch</td><td><input type="text" name="gimbal_pitch"/>(0 to -90) deg</td></tr>
+          <tr><td align=right>Number of Rows</td><td><input type="text" name="num_rows"/></td></tr>
+          <tr><td align=right>Number of Columns</td><td><input type="text" name="num_cols"/></td></tr>
+          <tr><td align=right>Drone Height</td><td><input type="text" name="drone_height"/> feet</td></tr>
+          <tr><td align=right><input type='submit'></td><td></td></tr>
+        </table>
+    </form>
+    <div id="main_body_result"> </div>
+  </body>
+</html>
